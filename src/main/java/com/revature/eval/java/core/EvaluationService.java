@@ -1,6 +1,7 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +31,14 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String acronym(String phrase) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		String[] split = phrase.split(" ");
+		StringBuilder ret = new StringBuilder(split.length);
+
+		for(int i = 0; i < split.length; i++){
+			ret.insert(i, split[i].charAt(0));
+		}
+
+		return ret.toString();
 	}
 
 	/**
@@ -84,18 +91,23 @@ public class EvaluationService {
 		}
 
 		public boolean isEquilateral() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			if(this.sideOne == this.sideTwo && this.sideTwo == this.sideThree) return true;
+			else return false;
 		}
 
 		public boolean isIsosceles() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			//written using the definition that *at least* two sides are equal, thus
+			//equilateral triangles are a special case of isoceles triangles
+			if(this.sideOne == this.sideTwo || this.sideTwo == this.sideThree) return true;
+			else return false;
 		}
 
 		public boolean isScalene() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			if(this.sideOne != this.sideTwo &&
+			   this.sideTwo != this.sideThree &&
+			   this.sideThree != this.sideOne)
+				return true;
+			else return false;
 		}
 
 	}
@@ -112,12 +124,25 @@ public class EvaluationService {
 	 * 
 	 * 3 + 2*1 + 2*3 + 2 + 1 = 3 + 2 + 6 + 3 = 5 + 9 = 14
 	 * 
-	 * @param string
+	 * @param str
 	 * @return
 	 */
-	public int getScrabbleScore(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+	public int getScrabbleScore(String str) {
+		//Strategy: Create a 26 value wide int array, storing the scrabble values in
+		//order (val[0] is a, val[1] is b, etc.). Convert the input string to lowercase
+		//and use ASCII values for quick lookup.
+		//
+		//For example, val[(int) 'a' - 97] => val[97-97] => val[0]
+
+		int[] val = {1,3,3,2,1,4,2,4,1,8,5,1,3,1,1,3,10,1,1,1,1,4,4,8,4,10};
+		String evalStr = str.toLowerCase();
+		int ret = 0;
+
+		for(int i=0; i<evalStr.length(); i++){
+			ret += val[(int) evalStr.charAt(i) - 97];
+		}
+
+		return ret;
 	}
 
 	/**
@@ -152,8 +177,35 @@ public class EvaluationService {
 	 * NANP-countries, only 1 is considered a valid country code.
 	 */
 	public String cleanPhoneNumber(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		StringBuilder build = new StringBuilder();
+		String ret;
+		
+		//first we'll pull all of the numbers out of the string
+		for(int i = 0; i < string.length(); i++){
+			char x = string.charAt(i);
+			if(Character.isDigit(x)){
+				build.append(x);
+			}
+		}
+
+		//next remove the country code if it exists
+		if(build.charAt(0) == '1'){
+			ret = build.substring(1);
+		} else {
+			ret = build.toString();
+		}
+
+		//finally, ensure this is a properly formatted phone number.
+		//return null if it is not
+		if(ret.length() != 10){
+			return null;
+		} else if(Integer.parseInt(String.valueOf(ret.charAt(0))) < 2){
+			return null;
+		} else if(Integer.parseInt(String.valueOf(ret.charAt(4))) < 2){
+			return null;
+		} else {
+			return ret;
+		}
 	}
 
 	/**
@@ -166,8 +218,14 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Map<String, Integer> wordCount(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		HashMap<String, Integer> ret = new HashMap<String, Integer>();
+		String[] pieces = string.split(" ");
+
+		for(String piece : pieces){
+			ret.merge(piece, 1, Integer::sum);
+		}
+
+		return ret;
 	}
 
 	/**
@@ -205,12 +263,22 @@ public class EvaluationService {
 	 * binary search is a dichotomic divide and conquer search algorithm.
 	 * 
 	 */
-	static class BinarySearch<T> {
+	static class BinarySearch<T extends Comparable<T>> {
 		private List<T> sortedList;
 
 		public int indexOf(T t) {
-			// TODO Write an implementation for this method declaration
-			return 0;
+			int low = 0;
+			int high = sortedList.size();
+			int index;
+			while(low < high){
+				index = (high + low) / 2;
+
+				if(sortedList.get(index).equals(t)) return index;
+				else if(sortedList.get(index).compareTo(t) > 0) high = index;
+				else low = index + 1;
+			}
+
+			return -1;
 		}
 
 		public BinarySearch(List<T> sortedList) {
