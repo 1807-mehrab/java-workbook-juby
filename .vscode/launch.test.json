@@ -1,0 +1,30 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "core",
+                "projectName": "core",
+                "workingDirectory": "c:\\Users\\Andrew\\Documents\\Revature\\assignments\\java-workbook-juby",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "core",
+                "projectName": "core",
+                "workingDirectory": "c:\\Users\\Andrew\\Documents\\Revature\\assignments\\java-workbook-juby",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}

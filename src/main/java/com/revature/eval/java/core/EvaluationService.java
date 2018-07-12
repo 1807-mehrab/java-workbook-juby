@@ -4,6 +4,7 @@ import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.IllegalArgumentException;
 
 public class EvaluationService {
 
@@ -31,14 +32,14 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String acronym(String phrase) {
-		String[] split = phrase.split(" ");
+		String[] split = phrase.split(" |-");
 		StringBuilder ret = new StringBuilder(split.length);
 
 		for(int i = 0; i < split.length; i++){
 			ret.insert(i, split[i].charAt(0));
 		}
 
-		return ret.toString();
+		return ret.toString().toUpperCase();
 	}
 
 	/**
@@ -98,7 +99,9 @@ public class EvaluationService {
 		public boolean isIsosceles() {
 			//written using the definition that *at least* two sides are equal, thus
 			//equilateral triangles are a special case of isoceles triangles
-			if(this.sideOne == this.sideTwo || this.sideTwo == this.sideThree) return true;
+			if(this.sideOne == this.sideTwo || 
+			   this.sideTwo == this.sideThree || 
+			   this.sideThree == this.sideOne) return true;
 			else return false;
 		}
 
@@ -176,7 +179,7 @@ public class EvaluationService {
 	 * Note: As this exercise only deals with telephone numbers used in
 	 * NANP-countries, only 1 is considered a valid country code.
 	 */
-	public String cleanPhoneNumber(String string) {
+	public String cleanPhoneNumber(String string) throws IllegalArgumentException {
 		StringBuilder build = new StringBuilder();
 		String ret;
 		
@@ -196,13 +199,15 @@ public class EvaluationService {
 		}
 
 		//finally, ensure this is a properly formatted phone number.
-		//return null if it is not
-		if(ret.length() != 10){
-			return null;
+		//throw IllegalArgumentException if it is not
+		if(ret.length() > 10){
+			throw new IllegalArgumentException("Too many digits.");
+		} else if (ret.length() < 10){
+			throw new IllegalArgumentException("Too few digits.");
 		} else if(Integer.parseInt(String.valueOf(ret.charAt(0))) < 2){
-			return null;
+			throw new IllegalArgumentException("Digits do not meet NANP format.");
 		} else if(Integer.parseInt(String.valueOf(ret.charAt(4))) < 2){
-			return null;
+			throw new IllegalArgumentException("Digits do not meet NANP format.");
 		} else {
 			return ret;
 		}
@@ -219,7 +224,7 @@ public class EvaluationService {
 	 */
 	public Map<String, Integer> wordCount(String string) {
 		HashMap<String, Integer> ret = new HashMap<String, Integer>();
-		String[] pieces = string.split(" ");
+		String[] pieces = string.split("\\P{Alpha}+");
 
 		for(String piece : pieces){
 			ret.merge(piece, 1, Integer::sum);
