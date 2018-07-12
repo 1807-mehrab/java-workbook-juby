@@ -4,7 +4,8 @@ import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.lang.IllegalArgumentException;
+import java.lang.*;
+import java.util.Arrays;
 
 public class EvaluationService {
 
@@ -318,9 +319,44 @@ public class EvaluationService {
 	 * @param string
 	 * @return
 	 */
-	public String toPigLatin(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+	public String toPigLatin(String str) {
+		//TODO Find a more elegant solution
+		//Break the phrase down
+		String[] pieces = str.split("\\P{Alpha}+");
+		StringBuilder ret = new StringBuilder();
+		int index;
+
+		char[] vowels = {'a', 'e', 'i', 'o', 'u'};
+		String[] phonemes = {"qu", "sc", "th"};
+		
+		for(String piece : pieces){
+			//check for leading vowel
+			index = Arrays.binarySearch(vowels, piece.charAt(0));
+			if(index >= 0){
+				ret.insert(ret.length(), piece);
+				ret.append("ay ");
+			} else{
+				//check for leading phoneme
+				index = Arrays.binarySearch(phonemes, piece.substring(0, 2));
+				if(index == 2){
+					ret.append(piece.substring(2));
+					ret.append("thay ");
+				} else if(piece.charAt(2) == 'h' && index == 1){
+					ret.append(piece.substring(3));
+					ret.append("schay ");
+				} else if(index==0){
+					ret.append(piece.substring(2));
+					ret.append("quay ");
+				} else {
+					ret.append(piece.substring(1));
+					ret.append(piece.charAt(0));
+					ret.append("ay ");
+				}
+			}
+		}
+
+		ret.deleteCharAt(ret.length() - 1);
+		return ret.toString();
 	}
 
 	/**
