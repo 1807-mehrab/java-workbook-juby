@@ -1,11 +1,12 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.lang.*;
-import java.util.Arrays;
+import java.lang.IllegalArgumentException;
 
 public class EvaluationService {
 
@@ -391,12 +392,25 @@ public class EvaluationService {
 	 * 
 	 * Note that 1 is not a prime number.
 	 * 
+	 * Basically copied from here, because I'm not going to reinvent
+	 * the wheel on a well known, well worked problem:
+	 * http://www.vogella.com/tutorials/JavaAlgorithmsPrimeFactorization/article.html
+	 * 
 	 * @param l
 	 * @return
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		List<Long> factors = new ArrayList<Long>();
+		for (long i = 2; i <= l / i; i++) {
+            while (l % i == 0) {
+                factors.add(i);
+                l /= i;
+            }
+        }
+        if (l > 1) {
+            factors.add(l);
+        }
+        return factors;
 	}
 
 	/**
@@ -434,8 +448,23 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			StringBuilder encrypt = new StringBuilder(string.length());
+
+			for(int i = 0; i < string.length(); i++){
+				if(Character.isUpperCase(string.charAt(i))){
+					encrypt.append(
+						(char) ((((string.charAt(i) - 'A') + key) % 26) + 'A')
+					);
+				} else if(Character.isLowerCase(string.charAt(i))){
+					encrypt.append(
+						(char) ((((string.charAt(i) - 'a') + key) % 26) + 'a')
+					);
+				} else {
+					encrypt.append(string.charAt(i));
+				}
+			}
+
+			return encrypt.toString();
 		}
 
 	}
@@ -449,12 +478,39 @@ public class EvaluationService {
 	 * If your language provides methods in the standard library to deal with prime
 	 * numbers, pretend they don't exist and implement them yourself.
 	 * 
-	 * @param i
+	 * @param N
 	 * @return
 	 */
-	public int calculateNthPrime(int i) {
-		// TODO Write an implementation for this method declaration
+	public int calculateNthPrime(int N) throws IllegalArgumentException{
+		if(N < 1){
+			throw new IllegalArgumentException("Invalid N");
+		} else {
+			int count = 0;
+			int i = 2;
+			while(count < N){
+				if(isPrime(i)) count++;
+				if(count == N) return i;
+				else i++;
+			}
+		}
 		return 0;
+	}
+
+	//from https://en.wikipedia.org/wiki/Primality_test
+	//I know there were other ones that were more efficient, but this one
+	//a)already had pseudocode, and
+	//b)took the least amount of time to wrap my head around.
+	private boolean isPrime(int n){
+		if (n <= 1) return false;
+		else if (n <= 3) return true;
+		else if( n % 2 == 0 || n % 3 == 0) return false;
+		int i = 5;
+		while(i * i <= n){
+			if (n % i == 0 || n % (i + 2) == 0)
+				return false;
+			i += 6;
+		}
+		return true;
 	}
 
 	/**
@@ -490,8 +546,29 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String encode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			StringBuilder encrypt = new StringBuilder();
+			int count = 0;
+			char c;
+			for(int i = 0; i < string.length(); i++){
+				if(Character.isDigit(string.charAt(i))){ 
+					encrypt.append(string.charAt(i));
+					count++;
+				}else if(Character.isLetter(string.charAt(i))){
+					c = (char) (
+						(25 - (Character.toLowerCase(string.charAt(i)) - 'a')) + 'a'
+					);
+					encrypt.append(c);
+					count++;
+				}
+
+				if(count == 5){
+					encrypt.append(" ");
+					count = 0;
+				}
+			}
+			if(encrypt.charAt(encrypt.length()-1) == ' ')
+				encrypt.deleteCharAt(encrypt.length()-1);
+			return encrypt.toString();
 		}
 
 		/**
@@ -501,8 +578,20 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String decode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			StringBuilder decrypt = new StringBuilder();
+			char c;
+			for(int i = 0; i < string.length(); i++){
+				if(Character.isDigit(string.charAt(i))){ 
+					decrypt.append(string.charAt(i));
+				}else if(Character.isLetter(string.charAt(i))){
+					c = (char) (
+						(25 - (Character.toLowerCase(string.charAt(i)) - 'a')) + 'a'
+					);
+					decrypt.append(c);
+				}
+			}
+			
+			return decrypt.toString();
 		}
 	}
 
@@ -529,8 +618,28 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isValidIsbn(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		char[] digits = new char[10];
+		int i = 0, sum = 0;
+		for(char c : string.toCharArray()){
+			if(c != '-'){
+				if(Character.isDigit(c) || (i==9 && c == 'X')){
+					digits[i] = c;
+					i++;
+				} else {
+					return false;
+				}
+			}
+		}
+
+		for(char digit : digits){
+			if(digit == 'X') sum += 10;
+			else{
+				sum += (digit - '0') * i;
+				i--;
+			}
+		}
+
+		return (sum % 11 == 0);
 	}
 
 	/**
