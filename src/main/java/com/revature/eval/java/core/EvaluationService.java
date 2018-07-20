@@ -1,5 +1,6 @@
 package com.revature.eval.java.core;
 
+import java.time.*;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -656,8 +657,22 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isPangram(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		boolean[] checklist = new boolean[26];
+		for(int i = 0; i < checklist.length; i++){
+			checklist[i] = false;
+		}
+
+		for(char c : string.toCharArray()){
+			if(Character.isLowerCase(c)){
+				checklist[c - 'a'] = true;
+			}
+		}
+
+		for(boolean check : checklist){
+			if(!check) return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -669,8 +684,11 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Temporal getGigasecondDate(Temporal given) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		if(given instanceof LocalDate){
+			return ((LocalDate) given).atStartOfDay().plusSeconds(1000000000);
+		} else {
+			return ((LocalDateTime) given).plusSeconds(1000000000);
+		}
 	}
 
 	/**
@@ -687,8 +705,19 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getSumOfMultiples(int i, int[] set) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		int sum = 0;
+		boolean isMultiple = false;
+
+		for(int j = 1; j < i; j++){
+			for(int element : set){
+				if(j % element == 0) isMultiple = true;
+			}
+
+			if(isMultiple) sum += j;
+			isMultiple = false;
+		}
+
+		return sum;
 	}
 
 	/**
@@ -728,8 +757,29 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isLuhnValid(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		int sum = 0;
+		int term;
+		String work = string.replaceAll("\\s", "");
+
+		if(work.length() < 2) return false;
+		else{
+			for(int i = 0; i < work.length(); i++){
+				if(!Character.isDigit(work.charAt(i))) return false;
+				else {
+					term = work.charAt(i) - '0';
+					if(i % 2 != 0) {
+						term = term * 2;
+						if(term > 9) term -= 9;
+					}
+					sum += term;
+				}
+			}
+
+			System.out.println(sum);
+
+			if(sum % 10 == 0) return true;
+			else return false;
+		}
 	}
 
 	/**
@@ -760,8 +810,19 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int solveWordProblem(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		String[] words = string.replaceAll("\\?","").split(" ");
+		int ret = 0;
+
+		if(words[3].equals("plus")) 
+			ret = Integer.parseInt(words[2]) + Integer.parseInt(words[4]);
+		else if(words[3].equals("minus"))
+			ret = Integer.parseInt(words[2]) - Integer.parseInt(words[4]);
+		else if(words[3].equals("multiplied"))
+			ret = Integer.parseInt(words[2]) * Integer.parseInt(words[5]);
+		else if(words[3].equals("divided"))
+			ret = Integer.parseInt(words[2]) / Integer.parseInt(words[5]);
+
+		return ret;
 	}
 
 }
